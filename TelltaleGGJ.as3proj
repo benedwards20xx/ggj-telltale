@@ -4,25 +4,42 @@
   <output>
     <movie disabled="False" />
     <movie input="" />
-    <movie disabled="True" />
+    <movie path="bin/TelltaleGGJ.swf" />
     <movie fps="30" />
     <movie width="800" />
     <movie height="600" />
     <movie version="10" />
-    <movie minorVersion="2" />
+    <movie minorVersion="1" />
     <movie background="#FFFFFF" />
   </output>
   <!-- Other classes to be compiled into your SWF -->
   <classpaths>
-    <class path="." />
+    <class path="src" />
   </classpaths>
-  <!-- Intrinsic Libraries -->
-  <intrinsics>
-    <element path="Library\AS3\frameworks\FlashIDE" />
-  </intrinsics>
+  <!-- Build options -->
+  <build>
+    <option accessible="False" />
+    <option allowSourcePathOverlap="False" />
+    <option benchmark="False" />
+    <option es="False" />
+    <option loadConfig="" />
+    <option optimize="True" />
+    <option showActionScriptWarnings="True" />
+    <option showBindingWarnings="True" />
+    <option showDeprecationWarnings="True" />
+    <option showUnusedTypeSelectorWarnings="True" />
+    <option strict="True" />
+    <option useNetwork="True" />
+    <option useResourceBundleMetadata="True" />
+    <option warnings="True" />
+    <option verboseStackTraces="False" />
+    <option staticLinkRSL="True" />
+    <option additional="" />
+    <option customSDK="" />
+  </build>
   <!-- Class files to compile (other referenced classes will automatically be included) -->
   <compileTargets>
-    <!-- example: <compile path="classes\Main.as" /> -->
+    <compile path="src\telltaleGGJ\Main.as" />
   </compileTargets>
   <!-- Paths to exclude from the Project Explorer tree -->
   <hiddenPaths>
