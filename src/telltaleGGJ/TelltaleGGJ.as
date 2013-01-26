@@ -7,7 +7,7 @@ package telltaleGGJ
 	{
 		public function TelltaleGGJ()
 		{
-			super(640,480,PlayState,2);
+			super(640,480,PlayState,1);
 		}
 	}
 }
