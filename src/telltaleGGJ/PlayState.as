@@ -1,6 +1,7 @@
 package telltaleGGJ
 {
 	import org.flixel.*;
+	import telltaleGGJ.Choices;
  
 	public class PlayState extends FlxState
 	{	
@@ -13,12 +14,13 @@ package telltaleGGJ
 		public var text3:FlxText;
 		public var text4:FlxText;
 		public var textRect:FlxSprite;
-		public var table:FlxSprite;
+		public var sandwich:FlxSprite;
 		public var textTimer:FlxTimer;
 		public var canInteract:Boolean;
 		public var choiceSelections:Array;
 		public var timerBar:FlxSprite;
 		public var barTimer:FlxTimer;
+		public var choices:Choices;
 
 		override public function create():void
 		{
@@ -89,9 +91,9 @@ package telltaleGGJ
 			player.drag.x = player.maxVelocity.x * 4;
 			
 			
-			table = new FlxSprite(420, 248);
-			table.makeGraphic(60,80,0xffaaaaaa);
-			add(table);
+			sandwich = new FlxSprite(420, 248);
+			sandwich.makeGraphic(60,80,0xffaaaaaa);
+			add(sandwich);
 			add(player);
 			
 			textRect = new FlxSprite(0, 330);
@@ -100,6 +102,7 @@ package telltaleGGJ
 			
 			textMain = new FlxText(0, 350, 640);
 			textMain.alignment = "center";
+			textMain.color = FlxG.BLUE;
 			add(textMain);
 			
 			//textBoxes = new Array();
@@ -127,15 +130,16 @@ package telltaleGGJ
 			text4.alignment = "center";
 			add(text4);
 			
-			timerBar = new FlxSprite(160, 450);
-			timerBar.makeGraphic(320, 20, 0xffff0000);
-			add(timerBar);
+			//timerBar = new FlxSprite(160, 450);
+			//timerBar.makeGraphic(320, 20, 0xffff0000);
+			//add(timerBar);
 			
 			textTimer = new FlxTimer();
 			barTimer = new FlxTimer();
 			
 			canInteract = false;
 			choiceSelections = new Array();
+			choices
 		}
 		
 		override public function update():void
@@ -152,7 +156,8 @@ package telltaleGGJ
 				//text3.text = checkCanInteract().toString();
 				//text2.text = "SPACE HIT";
 				if (checkCanInteract()) {
-					startInteraction("table");
+					
+					startInteraction("sandwich");
 				}
 				textMain.text = "";
 				var i:int;
@@ -190,12 +195,12 @@ package telltaleGGJ
 				//choiceSelections.push(5);
 			}
 
-			if (FlxG.overlap(player, table)) {
-				//textMain.x = table.x + 10;
-				//textMain.y = table.y + 10;
+			if (FlxG.overlap(player, sandwich)) {
+				//textMain.x = sandwich.x + 10;
+				//textMain.y = sandwich.y + 10;
 				textMain.text = "Eat sandwich?";
 				
-				//textMain = new FlxText(table.x - 10, table.y + 10, 100);
+				//textMain = new FlxText(sandwich.x - 10, sandwich.y + 10, 100);
 				//textMain.alignment = "center";
 				//textMain.text = "Eat sandwich?";
 				canInteract = true;
@@ -211,6 +216,10 @@ package telltaleGGJ
 		
 		public function startTextTimer():void {
 			//textTimer = new FlxTimer();
+			timerBar = new FlxSprite(160, 450);
+			timerBar.makeGraphic(320, 20, 0xffff0000);
+			
+			add(timerBar);
 			textTimer.start(60);
 		}
 		
@@ -227,11 +236,12 @@ package telltaleGGJ
 		}
 		
 		public function startInteraction(interaction:String):void {
-			textMain.text = "L" + choiceSelections.length + "L";
 			var i:int;
+			var s:String;
 			for (i = 0; i < choiceSelections.length; i++) {
-				textMain.text += choiceSelections[i];
+				s += choiceSelections[i];
 			}
+			textMain.text = choices.findQuestion(s);
 		}
 	}
 }
