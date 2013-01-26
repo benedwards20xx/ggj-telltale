@@ -18,7 +18,7 @@ package telltaleGGJ
 		}
 		
 		public function findQuestion(dialogueChoice:String):String {
-			textMain.text = "find Question";
+			//textMain.text = "find Question";
 			return "find Question";
 		}
 		
