@@ -139,7 +139,7 @@ package telltaleGGJ
 			
 			canInteract = false;
 			choiceSelections = new Array();
-			choices
+			choices = new Choices("sandwich");
 		}
 		
 		override public function update():void
@@ -161,9 +161,9 @@ package telltaleGGJ
 				}
 				textMain.text = "";
 				var i:int;
-				for (i = 0; i < choiceSelections.length; i++) {
-					textMain.text += choiceSelections[i];
-				}
+				//for (i = 0; i < choiceSelections.length; i++) {
+				//	textMain.text += choiceSelections[i];
+				//}
 				// take out next line because not intended to clear text always
 				//clearText();
 				//startInteraction(
@@ -238,9 +238,11 @@ package telltaleGGJ
 		public function startInteraction(interaction:String):void {
 			var i:int;
 			var s:String;
+			s = "";
 			for (i = 0; i < choiceSelections.length; i++) {
-				s += choiceSelections[i];
+				s += choiceSelections[i].toString();
 			}
+			text1.text = choices.findQuestion(s);
 			textMain.text = choices.findQuestion(s);
 		}
 	}
