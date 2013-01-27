@@ -8,39 +8,74 @@ package telltaleGGJ
 	public class PlayState extends FlxState
 	{	
 		public var level:FlxTilemap;
-		public var player:FlxSprite;
-		public var opponent:FlxSprite;
+		
 		public var textMain:FlxText;
 		public var text1:FlxText;
 		public var text2:FlxText;
 		public var text3:FlxText;
 		public var text4:FlxText;
+		public var doorText:FlxText;
+		public var stairText:FlxText;
+		public var deskText:FlxText;
+		public var wifeText:FlxText;
+		public var textPrompt:FlxText;
+		
+		public var player:FlxSprite;
+		public var wife:FlxSprite;
 		public var textRect:FlxSprite;
 		public var doorway:FlxSprite;
-		public var doorText:FlxText;
 		public var staircase:FlxSprite;
-		public var stairText:FlxText;
 		public var fridge:FlxSprite;
+		public var fridgeText:FlxText;
 		public var sandwich:FlxSprite;
-		public var textTimer:FlxTimer;
-		public var textBoxTimer:FlxText;
-		public var canInteract:Boolean;
-		public var choiceSelections:String;
+		public var cabinet:FlxSprite;
+		public var clock:FlxSprite;
+		public var bed:FlxSprite;
+		public var couch:FlxSprite;
 		public var timerBar:FlxSprite;
+		public var heart:FlxSprite;
+		public var desk:FlxSprite;
+		public var deadWife:FlxSprite;
+		public var cop:FlxSprite;
+		
 		public var startInteractionTimer:FlxTimer;
-		public var choices:Choices;
-		public var canInputResponse:Boolean;
 		public var conversationTimer:FlxTimer;
-		public var conversationStarted:Boolean;
 		public var inBetweenTimer:FlxTimer;
+		public var gameOverTimer:FlxTimer;
+		
+		public var heartSound:FlxSound;
+		
+		public var canInteract:Boolean;
+		public var canInputResponse:Boolean;
+		public var conversationStarted:Boolean;
 		public var inBetween:Boolean;
+		public var eatSandwich:Boolean;
+		public var hasHeart:Boolean;
+		public var gaveWifeHeart:Boolean;
+		public var wifeDead:Boolean;
+		
+		public var choiceSelections:String;
+		
 		public var curRoom:int;
 		public var prevRoom:int;
+		public var timerVal:int;
 		
-		//public var 
+		public var choices:Choices;
+		 
 		[Embed(source = "GGJ_EdgarSprite.png")] public var imgPlayer:Class;
 		[Embed(source = "GGJ_FridgeSprite.png")] public var imgFridge:Class;
 		[Embed(source = "SANDWICH.png")] public var imgSandwich:Class;
+		[Embed(source = "GGJ_WifeSprite.png")] public var imgWife:Class;
+		[Embed(source = "GGJ_CopSprite.png")] public var imgCop:Class;
+		[Embed(source = "GGJ_DeskSprite.png")] public var imgDesk:Class;
+		[Embed(source = "GGJ_HeartSprite.png")] public var imgHeart:Class;
+		[Embed(source = "GGJ_WifeDeadSprite.png")] public var imgWifeDead:Class;
+		[Embed(source = "GGJ_CabinetSprite.png")] public var imgCabinet:Class;
+		[Embed(source = "GGJ_ClockSprite.png")] public var imgClock:Class;
+		[Embed(source = "GGJ_BedSprite.png")] public var imgBed:Class;
+		[Embed(source = "GGJ_CouchSprite.png")] public var imgCouch:Class;
+		
+		[Embed(source="RealisticHeartbeat.mp3")] private var heartbeat:Class;
 
 		override public function create():void
 		{		
@@ -93,6 +128,7 @@ package telltaleGGJ
 			
 			prevRoom = 0;
 			curRoom = 1;
+			timerVal = 1;
 			
 			loadRoomOne();
 			
@@ -105,15 +141,6 @@ package telltaleGGJ
 			textMain.color = FlxG.RED;
 			textMain.text = "You are hungry. Maybe you should check the kitchen for something to eat."
 			add(textMain);
-			
-			//textBoxes = new Array();
-			//var startTextPlaceY:int = 350;
-			//var i:int;
-			//for (i = 0; i < textBoxes.size; i++) {
-			//	textBoxes[i] = new FlxText(0, startTextPlaceY, 640);
-			//	textBoxes[i].alignment = "center";
-			//	add(textBoxes[i]);
-			//}
 			
 			text1 = new FlxText(0, 370, 640);
 			text1.alignment = "center";
@@ -131,25 +158,24 @@ package telltaleGGJ
 			text4.alignment = "center";
 			add(text4);
 			
-			textBoxTimer = new FlxText(0, 450, 640);
-			textBoxTimer.color = FlxG.WHITE;
-			textBoxTimer.alignment = "center";
-			
-			//timerBar = new FlxSprite(160, 450);
-			//timerBar.makeGraphic(320, 20, 0xffff0000);
-			//add(timerBar);
-			
 			choiceSelections = new String;
 			choiceSelections = "";
+			
+			choices = new Choices();
 			
 			canInputResponse = false;
 			conversationStarted = false;
 			inBetween = false;
 			canInteract = true;
+			eatSandwich = false;
+			hasHeart = false;
+			gaveWifeHeart = false;
+			wifeDead = false;
 			
 			startInteractionTimer = new FlxTimer();
 			conversationTimer = new FlxTimer();
 			inBetweenTimer = new FlxTimer();
+			gameOverTimer = new FlxTimer();
 		}
 		
 		override public function update():void
@@ -164,69 +190,122 @@ package telltaleGGJ
 			
 			if (FlxG.keys.justReleased("ENTER") || FlxG.keys.justReleased("SPACE")) {
 				if (canInteract) {
-					if (FlxG.overlap(player, fridge) && curRoom == 2) {
-						startInteractionTimer.start(5);
-						//startInteractionTimer.start(30);
+					if (FlxG.overlap(player, fridge) && curRoom == 2 && !eatSandwich) {
 						startInteraction("sandwich");
+					} else if (FlxG.overlap(player, desk) && curRoom == 3 && eatSandwich && !hasHeart) {
+						startInteraction("heart");
+					//} else if (FlxG.overlap(player, wife) && curRoom == 4 && eatSandwich && hasHeart) { 
+						//hasHeart = false;
+						//startConversation("heart");
 					} else if (FlxG.overlap(player, doorway)) {
 						if (curRoom == 1) {
-							prevRoom == 1;
+							prevRoom = 1;
 							loadRoomTwo();
 						} else if (curRoom == 2) {
 							prevRoom = 2;
 							loadRoomOne();
 						} else if (curRoom == 3) {
 							prevRoom = 3;
-							loadRoomThree();
+							loadRoomFour();
 						} else if (curRoom == 4) {
 							prevRoom = 4;
-							loadRoomFour();
+							loadRoomThree();
+						}	
+					} else if (FlxG.overlap(player, staircase)) {
+						if (curRoom == 2) {
+							prevRoom = 2;
+							loadRoomThree();
+						} else if (curRoom == 3) {
+							prevRoom = 3;
+							loadRoomTwo();
 						}
 					}
 				}
 			} 
 			
-			if (canInputResponse && conversationStarted && !conversationTimer.finished) {
+			if (canInputResponse && !conversationStarted && choices.getInteractionChoice() == "sandwich") {
 				if (FlxG.keys.justReleased("ONE") || FlxG.keys.justReleased("NUMPADONE")) {
 					text1.color = FlxG.RED;
-					choiceSelections += 1;
+					eatSandwich = true;
+					canInteract = false;
 					clearAllBut(1);
+					remove(sandwich);
 					inBetweenConversation();
 				} else if (FlxG.keys.justReleased("TWO") || FlxG.keys.justReleased("NUMPADTWO")) {
 					text2.color = FlxG.RED;
-					choiceSelections += 2;
-					clearAllBut(2);
-					inBetweenConversation();
-				} else if (FlxG.keys.justReleased("THREE") || FlxG.keys.justReleased("NUMPADTHREE")) {
-					text3.color = FlxG.RED;
-					choiceSelections += 3;
-					clearAllBut(3);
-					inBetweenConversation();
-				} else if (FlxG.keys.justReleased("FOUR") || FlxG.keys.justReleased("NUMPADFOUR")) {
-					text4.color = FlxG.RED;
-					choiceSelections += 4;
-					clearAllBut(4);
-					inBetweenConversation();
+					eatSandwich = false;
+					canInteract = true;
+					remove(sandwich);
+					choices.setInteractionChoice("");
+					clearText();
+					textMain.text = "You are still hungry...";
 				}
-			} 
-			/*else if (canInputResponse && conversationTimer.finished) {
-				text1.color = FlxG.RED;
-				text1.text = ". . .";
-				choiceSelections += 5;
-				clearAllBut(1);
-				inBetweenConversation();
-			} */
-			
-			if (inBetweenTimer.finished) {
-				startConversation(choices.getInteractionChoice());
+			} else if (canInputResponse && !conversationStarted && choices.getInteractionChoice() == "heart") {
+				if (FlxG.keys.justReleased("ONE") || FlxG.keys.justReleased("NUMPADONE")) {
+					text1.color = FlxG.RED;
+					hasHeart = true;
+					canInteract = true;
+					//clearAllBut(1);
+					clearText();
+					remove(heart);
+					textMain.text = "You picked up the heart-shaped box of chocolates!";
+					remove(deskText);
+					//inBetweenConversation();
+				} else if (FlxG.keys.justReleased("TWO") || FlxG.keys.justReleased("NUMPADTWO")) {
+					text2.color = FlxG.RED;
+					hasHeart = false;
+					canInteract = true;
+					remove(heart);
+					choices.setInteractionChoice("");
+					clearText();
+					textMain.text = "Well I don't know of anything else she  might like...";
+				}
+			} else if (canInputResponse && conversationStarted) {
+				//&& !conversationTimer.finished) {
+				if (choiceSelections.length < 3) {
+					if (FlxG.keys.justReleased("ONE") || FlxG.keys.justReleased("NUMPADONE")) {
+						text1.color = FlxG.RED;
+						choiceSelections += 1;
+						clearAllBut(1);
+						inBetweenConversation();
+					} else if (FlxG.keys.justReleased("TWO") || FlxG.keys.justReleased("NUMPADTWO")) {
+						text2.color = FlxG.RED;
+						choiceSelections += 2;
+						clearAllBut(2);
+						inBetweenConversation();
+					} else if (FlxG.keys.justReleased("THREE") || FlxG.keys.justReleased("NUMPADTHREE")) {
+						text3.color = FlxG.RED;
+						choiceSelections += 3;
+						clearAllBut(3);
+						inBetweenConversation();
+					} else if (FlxG.keys.justReleased("FOUR") || FlxG.keys.justReleased("NUMPADFOUR")) {
+						text4.color = FlxG.RED;
+						choiceSelections += 4;
+						clearAllBut(4);
+						inBetweenConversation();
+					}
+				} else if (choiceSelections.length >= 3) {
+					endConversation();
+				}
 			}
 			
-			if (startInteractionTimer.finished && !conversationStarted) {
-				if (choices.getInteractionChoice() == "sandwich") {
-					remove(sandwich);
-				}
-				startInteractionTimer.stop();
-				startConversation(choices.getInteractionChoice());
+			if (inBetweenTimer.finished && !canInteract && choices.getInteractionChoice() == "sandwich") {
+				startConversation("sandwich");
+			} else if (inBetweenTimer.finished && choices.getInteractionChoice() == "heart") {
+				startConversation("heart");
+			} else if (inBetweenTimer.finished && choices.getInteractionChoice() == "police") {
+				startConversation("police");
+			}
+			
+			if (gameOverTimer.finished) {
+				remove(level);
+				remove(textRect);
+				FlxG.bgColor = FlxG.BLACK;
+				textPrompt = new FlxText(0, 100, FlxG.width);
+				textPrompt.alignment = "center";
+				textPrompt.color = FlxG.WHITE;
+				textPrompt.text = "Game Over - Global Game Jam 2013 - Ben Edwards, Nick Lytle";
+				add(textPrompt);
 			}
 			
 			super.update();
@@ -235,13 +314,25 @@ package telltaleGGJ
 		
 		public function removeAllThings():void {
 			remove(fridge);
+			remove(fridgeText);
+			remove(desk);
+			remove(deskText);
 			remove(doorway);
 			remove(doorText);
 			remove(staircase);
 			remove(stairText);
 			remove(sandwich);
-			remove(opponent);
+			remove(heart);
+			remove(wife);
+			remove(wifeText);
 			remove(player);
+			remove(deadWife);
+			remove(textPrompt);
+			remove(cop);
+			remove(bed);
+			remove(couch);
+			remove(cabinet);
+			remove(clock);
 		}
 		
 		public function loadRoomOne():void {
@@ -259,17 +350,33 @@ package telltaleGGJ
 			doorText.text = "Kitchen";
 			add(doorText);
 			
+			couch = new FlxSprite(200, 258);
+			couch.loadGraphic(imgCouch, false, false, 200, 72);
+			add(couch);
+			
 			if (prevRoom == 2) {
 				player = new FlxSprite(560, 185);
+				if (wifeDead) {
+					remove(deadWife);
+					cop = new FlxSprite(100, 184);
+					//wife.makeGraphic(60, 144, FlxG.BLUE);
+					cop.loadGraphic(imgCop, false, false, 60, 144);
+					add(cop);
+					inBetween = true;
+					canInputResponse = false;
+					inBetweenTimer = new FlxTimer();
+					inBetweenTimer.start(1);
+					canInteract = false;
+				}
 			} else if (prevRoom == 0) {
 				player = new FlxSprite(10, 185);
+				textPrompt = new FlxText(0, 100, FlxG.width);
+				textPrompt.alignment = "center";
+				textPrompt.color = FlxG.BLACK;
+				textPrompt.text = "Use LEFT and RIGHT (or A and D) to move, SPACE or ENTER to interact, and 1 through 4 to choose dialogue choices.";
+				add(textPrompt);
 			}
-			player.loadGraphic(imgPlayer, false, false, 60, 144);
-			player.maxVelocity.x = 80;
-			player.maxVelocity.y = 200;
-			player.acceleration.y = 200;
-			player.drag.x = player.maxVelocity.x * 4;
-			add(player);
+			addPlayerToRoom();
 		}
 		
 		public function loadRoomTwo():void {
@@ -280,101 +387,157 @@ package telltaleGGJ
 			curRoom = 2;
 			
 			fridge = new FlxSprite(520, 168);
-			//frodge.makeGraphic(60, 80, 0xffaaaaaa);
 			fridge.loadGraphic(imgFridge, false, false, 78, 160);
 			add(fridge);
 			
-			sandwich = new FlxSprite();
-			sandwich.loadGraphic(imgSandwich, false, false, 198, 107);
-			sandwich.x = FlxG.width / 2 - sandwich.width / 2;
-			sandwich.y = 370;
+			if (!eatSandwich) {
+				fridgeText = new FlxText(fridge.x, fridge.y - 20, 80);
+				fridgeText.color = FlxG.BLACK;
+				fridgeText.text = "Fridge";
+				add(fridgeText);
+			}
 			
 			doorway = new FlxSprite(8, 168);
 			doorway.makeGraphic(20, 160, 0xff97683c);
 			add(doorway);
 			
-			doorText = new FlxText(doorway.x + 10, doorway.y - 20, 80);
+			doorText = new FlxText(doorway.x + 8, doorway.y - 20, 80);
 			doorText.color = FlxG.BLACK;
 			doorText.text = "Living Room";
 			add(doorText);
 			
-			staircase = new FlxSprite(240, 168);
-			staircase.makeGraphic(60, 160, FlxG.BLACK);
+			staircase = new FlxSprite(120, 168);
+			staircase.makeGraphic(80, 160, FlxG.BLACK);
 			add(staircase);
-			stairText = new FlxText(staircase.x + staircase.width / 2, staircase.y - 20, 80);
+			stairText = new FlxText(staircase.x + 6, staircase.y - 20, 80);
 			stairText.color = FlxG.BLACK;
 			stairText.text = "Upstairs";
 			add(stairText);
 			
-			player = new FlxSprite(10, 185);
+			if (prevRoom == 3) {
+				player = new FlxSprite(staircase.x, 185);
+				if (gaveWifeHeart) {
+					deadWife = new FlxSprite(360, 278);
+					deadWife.loadGraphic(imgWifeDead, false, false, 144, 60);
+					add(deadWife);
+					textMain.text = "You hear some knocking at the front door. Uh oh it might be the police...";
+					startInteraction("police");
+				}
+			} else if (prevRoom == 1) {
+				player = new FlxSprite(10, 185);
+			}
 			player.loadGraphic(imgPlayer, false, false, 60, 144);
-			player.maxVelocity.x = 80;
-			player.maxVelocity.y = 200;
-			player.acceleration.y = 200;
-			player.drag.x = player.maxVelocity.x * 4;
-			add(player);
+			addPlayerToRoom();
 		}
 		
 		public function loadRoomThree():void {
-			FlxG.bgColor = 0xffffbcbc;
+			FlxG.bgColor = 0xff34d140;
 			
 			removeAllThings();
 			
 			curRoom = 3;
 			
-			fridge = new FlxSprite(520, 168);
-			//frodge.makeGraphic(60, 80, 0xffaaaaaa);
-			fridge.loadGraphic(imgFridge, false, false, 78, 160);
-			add(fridge);
-			
-			sandwich = new FlxSprite();
-			sandwich.loadGraphic(imgSandwich, false, false, 198, 107);
-			sandwich.x = FlxG.width / 2 - sandwich.width / 2;
-			sandwich.y = 370;
-			
 			doorway = new FlxSprite(8, 168);
 			doorway.makeGraphic(20, 160, 0xff97683c);
 			add(doorway);
 			
-			doorText = new FlxText(doorway.x + 10, doorway.y - 20, 80);
+			doorText = new FlxText(doorway.x + 8, doorway.y - 20, 80);
 			doorText.color = FlxG.BLACK;
-			doorText.text = "Living Room";
+			doorText.text = "Bedroom";
 			add(doorText);
 			
-			staircase = new FlxSprite(240, 168);
-			staircase.makeGraphic(60, 160, FlxG.BLACK);
+			staircase = new FlxSprite(120, 168);
+			staircase.makeGraphic(80, 160, FlxG.BLACK);
 			add(staircase);
-			stairText = new FlxText(staircase.x + staircase.width / 2, staircase.y - 20, 80);
+			stairText = new FlxText(staircase.x + 6, staircase.y - 20, 80);
 			stairText.color = FlxG.BLACK;
-			stairText.text = "Upstairs";
+			stairText.text = "Downstairs";
 			add(stairText);
 			
-			player = new FlxSprite(10, 185);
+			desk = new FlxSprite(460, 184);
+			desk.loadGraphic(imgDesk, false, false, 150, 145);
+			add(desk);
+			
+			clock = new FlxSprite(300, 148);
+			clock.loadGraphic(imgClock, false, false, 80, 180);
+			add(clock);
+			
+			if (eatSandwich && !hasHeart) {
+				textMain.color = FlxG.RED;
+				textMain.text = "Maybe I should try to do something to make it up to her...";
+				
+				deskText = new FlxText(desk.x, desk.y + 20, 80);
+				deskText.color = FlxG.BLACK;
+				deskText.text = "Desk";
+				add(deskText);
+			}
+			
+			if (prevRoom == 4 && gaveWifeHeart && !wifeDead) {
+				FlxG.shake(0.05, 2);
+				wifeDead = true;
+				textMain.color = FlxG.RED;
+				textMain.text = "Woops, you opened the door and knocked her down the stairs";
+			}
+		
+			if (prevRoom == 2) { 
+				player = new FlxSprite(staircase.x, 185);
+			} else if (prevRoom == 4) {
+				player = new FlxSprite(10, 185);
+			}
 			player.loadGraphic(imgPlayer, false, false, 60, 144);
-			player.maxVelocity.x = 80;
+			addPlayerToRoom();
+		}
+		
+		public function loadRoomFour():void {
+			FlxG.bgColor = 0xffbdbeff;
+			
+			removeAllThings();
+			
+			curRoom = 4;
+			
+			doorway = new FlxSprite(612, 168);
+			doorway.makeGraphic(20, 160, 0xff97683c);
+			add(doorway);
+			
+			doorText = new FlxText(doorway.x - 25, doorway.y - 20, 60);
+			doorText.color = FlxG.BLACK;
+			doorText.text = "Study";
+			add(doorText);
+			
+			bed = new FlxSprite(12, 185);
+			bed.loadGraphic(imgBed, false, false, 200, 148);
+			add(bed);
+			
+			cabinet = new FlxSprite(350, 158);
+			cabinet.loadGraphic(imgCabinet, false, false, 105, 170);
+			add(cabinet);
+			
+			if (!gaveWifeHeart) {
+				if (eatSandwich) {
+					wife = new FlxSprite(100, 184);
+					wife.loadGraphic(imgWife, false, false, 60, 144);
+					add(wife);
+					if (hasHeart) {
+						inBetween = true;
+						canInputResponse = false;
+						inBetweenTimer = new FlxTimer();
+						inBetweenTimer.start(1);
+						canInteract = false;
+					}
+				} 
+			}
+			
+			player = new FlxSprite(560, 185);
+			addPlayerToRoom();
+		}
+		
+		public function addPlayerToRoom():void {
+			player.loadGraphic(imgPlayer, false, false, 60, 144);
+			player.maxVelocity.x = 120;
 			player.maxVelocity.y = 200;
 			player.acceleration.y = 200;
 			player.drag.x = player.maxVelocity.x * 4;
 			add(player);
-		}
-		
-		public function loadRoomFour():void {
-		
-		}
-		
-		public function loadOpponent():void {
-			remove(opponent);
-			opponent = new FlxSprite(100, 184);
-			opponent.makeGraphic(60, 144, FlxG.BLUE);
-			add(opponent);
-		}
-		
-		public function startTextTimer():void {
-			timerBar = new FlxSprite(160, 450);
-			timerBar.makeGraphic(320, 20, 0xffff0000);
-			add(timerBar);
-			add(textBoxTimer);
-			textTimer.start(240);
 		}
 		
 		public function clearText():void {
@@ -400,34 +563,56 @@ package telltaleGGJ
 			}
 		}
 		
-		public function checkCanInteract():Boolean {
-			return canInteract;
-		}
-		
 		public function startInteraction(interaction:String):void {
-			choices = new Choices(interaction);
+			choices.setInteractionChoice(interaction);
+			canInteract = false;
 			textMain.color = FlxG.RED;
-			//FlxG.shake();
-			if (choices.getInteractionChoice() == "sandwich") {
+			if (interaction == "sandwich") {
 				textMain.text = "There is a sandwich in the fridge, will you eat it?";
-				
-				textMain.text = "You decided to eat a delicious sandwich that was in the fridge";
+				text1.color = FlxG.WHITE;
+				text1.text = "1. Eat it!";
+				text2.color = FlxG.WHITE;
+				text2.text = "2. Leave it alone";
+				canInputResponse = true;
+				remove(sandwich);
+				sandwich = new FlxSprite();
+				sandwich.loadGraphic(imgSandwich, false, false, 198, 107);
+				sandwich.x = FlxG.width  * 3 / 4 - sandwich.width / 2;
+				sandwich.y = 370;
 				add(sandwich);
+			} else if (interaction == "heart") {
+				textMain.text = "There is a box of chocolates in the desk, pick them up?"
+				text1.color = FlxG.WHITE;
+				text1.text = "1. Get them chocolates!";
+				text2.color = FlxG.WHITE;
+				text2.text = "2. Leave them alone";
+				canInputResponse = true;
+				remove(heart);
+				heart = new FlxSprite();
+				heart.loadGraphic(imgHeart, false, false, 140, 112);
+				heart.x = FlxG.width  * 7 / 8 - heart.width / 2;
+				heart.y = 360;
+				add(heart);
+			} else if (interaction == "police") {
+				canInteract = true;
 			}
 		}
 		
 		public function startConversation(conversation:String):void {
 			conversationStarted = true;
-			loadOpponent();
 			inBetweenTimer.stop();
-			conversationTimer.start(10);
+			if (conversation == "sandwich") {
+				remove(wife);
+				wife = new FlxSprite(100, 184);
+				wife.loadGraphic(imgWife, false, false, 60, 144);
+				add(wife);
+				inBetweenTimer.stop();
+			} else if (conversation == "police") {
+				FlxG.playMusic(heartbeat);
+			}
+			
 			canInputResponse = true;
 			var i:int;
-			//var choicesString:String;
-			//choicesString = "";
-			//for (i = 0; i < choiceSelections.length; i++) {
-			//	choicesString += choiceSelections[i];
-			//}
 			var tempResponseString:String = ""; 
 			textMain.color = FlxG.BLUE;
 			tempResponseString = choices.findQuestion(choiceSelections).split("|")[0];
@@ -451,11 +636,41 @@ package telltaleGGJ
 				text4.text = tempResponseString;
 		}
 		
+		public function endConversation():void {
+			inBetweenTimer.stop();
+			inBetweenTimer = new FlxTimer();
+			canInputResponse = false;
+			clearText();
+			canInteract = true;
+			conversationStarted = false;
+			if (choices.getInteractionChoice() == "sandwich") {
+				textMain.color = FlxG.BLUE;
+				textMain.text = "WAHHH";
+				remove(fridgeText);
+				remove(wife);
+				choiceSelections = "";
+			} else if (choices.getInteractionChoice() == "heart") {
+				textMain.color = FlxG.BLUE;
+				textMain.text = "I'M LEAVING";
+				gaveWifeHeart = true;
+				remove(wifeText);
+				remove(wife);
+				choiceSelections = "";
+			} else if (choices.getInteractionChoice() == "police") {
+				if (choiceSelections.charAt(choiceSelections.length - 1) == "1") {
+					textMain.color = FlxG.BLUE;
+					textMain.text = "You bastard";
+					
+				}
+				gameOverTimer.start(timerVal * 2);
+				removeAllThings();
+			}
+		}
+		
 		public function inBetweenConversation():void {
 			inBetween = true;
-			conversationTimer.stop();
 			canInputResponse = false;
-			inBetweenTimer.start(5);
+			inBetweenTimer.start(timerVal);
 		}
 	}
 }
