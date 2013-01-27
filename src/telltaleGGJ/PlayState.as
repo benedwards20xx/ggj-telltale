@@ -373,7 +373,7 @@ package telltaleGGJ
 					inBetweenTimer = new FlxTimer();
 					inBetweenTimer.start(1);
 					canInteract = false;
-					FlxG.playMusic(heartbeat);
+					FlxG.playMusic(heartbeat, 10);
 					textMain.text = "As I approached the stranger’s call, her beating heart filled the hall!";
 				}
 			} else if (prevRoom == 0) {
