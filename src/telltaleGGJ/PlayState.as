@@ -133,7 +133,7 @@ package telltaleGGJ
 			
 			prevRoom = 0;
 			curRoom = 1;
-			timerVal = 1;
+			timerVal = 5;
 			
 			loadRoomOne();
 			
@@ -371,7 +371,7 @@ package telltaleGGJ
 					inBetween = true;
 					canInputResponse = false;
 					inBetweenTimer = new FlxTimer();
-					inBetweenTimer.start(1);
+					inBetweenTimer.start(timerVal);
 					canInteract = false;
 					FlxG.playMusic(heartbeat, 10);
 					textMain.text = "As I approached the stranger’s call, her beating heart filled the hall!";
@@ -704,7 +704,7 @@ package telltaleGGJ
 					textMain.color = FlxG.BLUE;
 					textMain.text = "You bastard";
 				}
-				gameOverTimer.start(timerVal * 3);
+				gameOverTimer.start(timerVal);
 				removeAllThings();
 			}
 		}
