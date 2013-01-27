@@ -144,7 +144,7 @@ package telltaleGGJ
 			textMain = new FlxText(0, 350, 640);
 			textMain.alignment = "center";
 			textMain.color = FlxG.RED;
-			textMain.text = "You are hungry. Maybe you should check the kitchen for something to eat."
+			textMain.text = "";
 			add(textMain);
 			
 			text1 = new FlxText(0, 370, 640);
@@ -245,7 +245,7 @@ package telltaleGGJ
 					remove(sandwich);
 					choices.setInteractionChoice("");
 					clearText();
-					textMain.text = "You are still hungry...";
+					//textMain.text = "You are still hungry...";
 				}
 			} else if (canInputResponse && !conversationStarted && choices.getInteractionChoice() == "heart") {
 				if (FlxG.keys.justReleased("ONE") || FlxG.keys.justReleased("NUMPADONE")) {
@@ -265,11 +265,10 @@ package telltaleGGJ
 					remove(heart);
 					choices.setInteractionChoice("");
 					clearText();
-					textMain.text = "Well I don't know of anything else she  might like...";
+					//textMain.text = "Well I don't know of anything else she  might like...";
 				}
 			} else if (canInputResponse && conversationStarted) {
-				//&& !conversationTimer.finished) {
-				if (choiceSelections.length < 3) {
+				if ((choices.getInteractionChoice() != "heart" && choiceSelections.length < 3) || (choices.getInteractionChoice() == "heart" && choiceSelections.length < 2)) {
 					if (FlxG.keys.justReleased("ONE") || FlxG.keys.justReleased("NUMPADONE")) {
 						text1.color = FlxG.RED;
 						choiceSelections += 1;
@@ -291,7 +290,7 @@ package telltaleGGJ
 						clearAllBut(4);
 						inBetweenConversation();
 					}
-				} else if (choiceSelections.length >= 3) {
+				} else if ((choices.getInteractionChoice() != "heart" && choiceSelections.length >= 3) || (choices.getInteractionChoice() == "heart" && choiceSelections.length >= 2)) {
 					endConversation();
 				}
 			}
@@ -367,7 +366,6 @@ package telltaleGGJ
 				if (wifeDead) {
 					remove(deadWife);
 					cop = new FlxSprite(100, 184);
-					//wife.makeGraphic(60, 144, FlxG.BLUE);
 					cop.loadGraphic(imgCop, false, false, 60, 144);
 					add(cop);
 					inBetween = true;
@@ -375,6 +373,8 @@ package telltaleGGJ
 					inBetweenTimer = new FlxTimer();
 					inBetweenTimer.start(1);
 					canInteract = false;
+					FlxG.playMusic(heartbeat);
+					textMain.text = "As I approached the stranger’s call, her beating heart filled the hall!";
 				}
 			} else if (prevRoom == 0) {
 				player = new FlxSprite(10, 185);
@@ -403,6 +403,9 @@ package telltaleGGJ
 				fridgeText.color = FlxG.BLACK;
 				fridgeText.text = "Fridge";
 				add(fridgeText);
+				
+				textMain.color = FlxG.RED;
+				textMain.text = "My stomach aches, I need a smidge of what is left inside the fridge.";
 			}
 			
 			doorway = new FlxSprite(8, 168);
@@ -428,7 +431,7 @@ package telltaleGGJ
 					deadWife = new FlxSprite(220, 278);
 					deadWife.loadGraphic(imgWifeDead, false, true, 144, 60);
 					add(deadWife);
-					textMain.text = "You hear some knocking at the front door. Uh oh it might be the police...";
+					textMain.text = "She lay there dead upon the floor. I then heard knocking at my door.";
 					startInteraction("police");
 				}
 			} else if (prevRoom == 1) {
@@ -471,8 +474,8 @@ package telltaleGGJ
 			add(clock);
 			
 			if (eatSandwich && !hasHeart) {
-				textMain.color = FlxG.RED;
-				textMain.text = "Maybe I should try to do something to make it up to her...";
+				//textMain.color = FlxG.RED;
+				//textMain.text = "Maybe I should try to do something to make it up to her...";
 				
 				deskText = new FlxText(desk.x, desk.y + 20, 80);
 				deskText.color = FlxG.BLACK;
@@ -485,7 +488,7 @@ package telltaleGGJ
 				FlxG.shake(0.05, 2);
 				wifeDead = true;
 				textMain.color = FlxG.RED;
-				textMain.text = "Woops, you opened the door and knocked her down the stairs";
+				textMain.text = "I went to try and calm her airs. Instead I pushed her down the stairs!";
 			}
 		
 			if (prevRoom == 2) { 
@@ -578,7 +581,7 @@ package telltaleGGJ
 			textMain.color = FlxG.RED;
 			if (interaction == "sandwich") {
 				sound = FlxG.play(fridgeOpen);
-				textMain.text = "There is a sandwich in the fridge, will you eat it?";
+				textMain.text = "I find a sandwich: ham and wheat, it looks so good, but do I eat... it?";
 				text1.color = FlxG.WHITE;
 				text1.text = "1. Eat it!";
 				text2.color = FlxG.WHITE;
@@ -592,9 +595,9 @@ package telltaleGGJ
 				add(sandwich);
 			} else if (interaction == "heart") {
 				sound = FlxG.play(deskOpen);
-				textMain.text = "There is a box of chocolates in the desk, pick them up?"
+				textMain.text = "A heart-shaped box! Chocolates galore! This certainly will please my... wife."
 				text1.color = FlxG.WHITE;
-				text1.text = "1. Get them chocolates!";
+				text1.text = "1. Get the chocolates!";
 				text2.color = FlxG.WHITE;
 				text2.text = "2. Leave them alone";
 				canInputResponse = true;
@@ -658,22 +661,22 @@ package telltaleGGJ
 				textMain.color = FlxG.BLUE;
 				switch (randomNumber(1, 6)) {
 					case 1:
-						textMain.text = "AAAAAAAAAA";
+						textMain.text = "I’ve had enough! I now must go. I hate your face. I hate you Poe!";
 						break;
 					case 2:
-						textMain.text = "BBBBBBBBBB";
+						textMain.text = "I can’t stand you. I hate you so! I’ve packed my things. I now will go!";
 						break;
 					case 3:
-						textMain.text = "CCCCCCCCCC";
+						textMain.text = "I’m gonna leave. Just so you know.  Good luck in life without my dough!";
 						break;
 					case 4:
-						textMain.text = "DDDDDDDDDD";
+						textMain.text = "I’ve had enough! I hate you, Poe. I hope you’ll be haunted by a crow!";
 						break;
 					case 5:
-						textMain.text = "EEEEEEEEEE";
+						textMain.text = "I hate your face! I hate you so! You stink worse than my left big toe!";
 						break;
 					case 6:
-						textMain.text = "FFFFFFFFFF";
+						textMain.text = "I’m going to leave! I hate you, Poe! You are sub-par as poets go!";
 						break;
 				}
 				remove(fridgeText);
@@ -681,7 +684,17 @@ package telltaleGGJ
 				choiceSelections = "";
 			} else if (choices.getInteractionChoice() == "heart") {
 				textMain.color = FlxG.BLUE;
-				textMain.text = "I'M LEAVING";
+				switch (randomNumber(1, 3)) {
+					case 1:
+						textMain.text = "I’ve had enough! I now must go. I hate your face. I hate you Poe!";
+						break;
+					case 2:
+						textMain.text = "I can’t stand you. I hate you so! I’ve packed my things. I now will go!";
+						break;
+					case 3:
+						textMain.text = "I’m gonna leave. Just so you know.  Good luck in life without my dough!";
+						break;
+				}
 				gaveWifeHeart = true;
 				remove(wifeText);
 				remove(wife);
