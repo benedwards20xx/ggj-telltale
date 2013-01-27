@@ -533,7 +533,7 @@ package telltaleGGJ
 						inBetween = true;
 						canInputResponse = false;
 						inBetweenTimer = new FlxTimer();
-						inBetweenTimer.start(1);
+						inBetweenTimer.start(timerVal);
 						canInteract = false;
 					}
 				} 

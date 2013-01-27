@@ -408,7 +408,7 @@ package telltaleGGJ
 								if (dialogueChoice.length > 2) {
 									return "Past Question 1.2";
 								} else {
-									return "SKRILLEX? THAT’S MY JAM!|1. Dance party!.|2. Dance party son.|Dance party?|3. Dance party eh?";
+									return "DUBSTEP?!?! THAT’S MY JAM!|1. Dance party!.|2. Dance party son.|Dance party?|3. Dance party eh?";
 								}
 							} else if (dialogueChoice.charAt(1) == "3") {
 								if (dialogueChoice.length > 2) {
