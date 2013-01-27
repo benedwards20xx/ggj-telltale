@@ -17,6 +17,9 @@ package telltaleGGJ
 		public var text4:FlxText;
 		public var textRect:FlxSprite;
 		public var doorway:FlxSprite;
+		public var doorText:FlxText;
+		public var staircase:FlxSprite;
+		public var stairText:FlxText;
 		public var fridge:FlxSprite;
 		public var sandwich:FlxSprite;
 		public var textTimer:FlxTimer;
@@ -32,17 +35,15 @@ package telltaleGGJ
 		public var inBetweenTimer:FlxTimer;
 		public var inBetween:Boolean;
 		public var curRoom:int;
-		public var doorText:FlxText;
+		public var prevRoom:int;
+		
 		//public var 
 		[Embed(source = "GGJ_EdgarSprite.png")] public var imgPlayer:Class;
 		[Embed(source = "GGJ_FridgeSprite.png")] public var imgFridge:Class;
 		[Embed(source = "SANDWICH.png")] public var imgSandwich:Class;
 
 		override public function create():void
-		{
-			//FlxG.bgColor = 0xffaaaaaa;
-			
-			
+		{		
 			var data:Array = new Array(
 			1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 			1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
@@ -86,37 +87,13 @@ package telltaleGGJ
 			1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
 			1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
 			1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
-			//1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-			//1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-			//1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-			//1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-			//1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-			//1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-			//1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-			//1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-			//1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 );
 			level = new FlxTilemap();
 			level.loadMap(FlxTilemap.arrayToCSV(data,80), FlxTilemap.ImgAutoAlt, 0, 0, FlxTilemap.ALT);
 			add(level);
 			
+			prevRoom = 0;
 			curRoom = 1;
 			
-			//opponent = new FlxSprite(100, 184);
-			//opponent.makeGraphic(60,144,FlxG.BLUE);
-			
-			//fridge = new FlxSprite(460, 170);
-			//frodge.makeGraphic(60, 80, 0xffaaaaaa);
-			//fridge.loadGraphic(imgFridge, false, false, 78, 160);
-			//add(fridge);
-			
-			//sandwich = new FlxSprite();
-			//sandwich.loadGraphic(imgSandwich, false, false, 198, 107);
-			//sandwich.x = FlxG.width / 2 - sandwich.width / 2;
-			//sandwich.y = 370;
-			
-			//doorway = new FlxSprite(612, 170);
-			//doorway.makeGraphic(20, 160, 0xff97683c);
-			//add(doorway);
 			loadRoomOne();
 			
 			textRect = new FlxSprite(0, 330);
@@ -187,15 +164,23 @@ package telltaleGGJ
 			
 			if (FlxG.keys.justReleased("ENTER") || FlxG.keys.justReleased("SPACE")) {
 				if (canInteract) {
-					if (FlxG.overlap(player, fridge)) {
+					if (FlxG.overlap(player, fridge) && curRoom == 2) {
 						startInteractionTimer.start(5);
 						//startInteractionTimer.start(30);
 						startInteraction("sandwich");
 					} else if (FlxG.overlap(player, doorway)) {
 						if (curRoom == 1) {
+							prevRoom == 1;
 							loadRoomTwo();
 						} else if (curRoom == 2) {
+							prevRoom = 2;
 							loadRoomOne();
+						} else if (curRoom == 3) {
+							prevRoom = 3;
+							loadRoomThree();
+						} else if (curRoom == 4) {
+							prevRoom = 4;
+							loadRoomFour();
 						}
 					}
 				}
@@ -248,24 +233,37 @@ package telltaleGGJ
 			FlxG.collide(level, player);
 		}
 		
+		public function removeAllThings():void {
+			remove(fridge);
+			remove(doorway);
+			remove(doorText);
+			remove(staircase);
+			remove(stairText);
+			remove(sandwich);
+			remove(opponent);
+			remove(player);
+		}
+		
 		public function loadRoomOne():void {
+			removeAllThings();
 			FlxG.bgColor = 0xfffdfa66;
 			
 			curRoom = 1;
 			
-			remove(doorway);
-			doorway = new FlxSprite(612, 170);
+			doorway = new FlxSprite(612, 168);
 			doorway.makeGraphic(20, 160, 0xff97683c);
 			add(doorway);
 			
-			remove(doorText);
 			doorText = new FlxText(doorway.x - 25, doorway.y - 20, 60);
 			doorText.color = FlxG.BLACK;
 			doorText.text = "Kitchen";
 			add(doorText);
 			
-			remove(player);
-			player = new FlxSprite(10, 185);
+			if (prevRoom == 2) {
+				player = new FlxSprite(560, 185);
+			} else if (prevRoom == 0) {
+				player = new FlxSprite(10, 185);
+			}
 			player.loadGraphic(imgPlayer, false, false, 60, 144);
 			player.maxVelocity.x = 80;
 			player.maxVelocity.y = 200;
@@ -277,30 +275,37 @@ package telltaleGGJ
 		public function loadRoomTwo():void {
 			FlxG.bgColor = 0xffffbcbc;
 			
+			removeAllThings();
+			
 			curRoom = 2;
 			
-			fridge = new FlxSprite(460, 170);
+			fridge = new FlxSprite(520, 168);
 			//frodge.makeGraphic(60, 80, 0xffaaaaaa);
 			fridge.loadGraphic(imgFridge, false, false, 78, 160);
 			add(fridge);
 			
 			sandwich = new FlxSprite();
-			//sandwich.loadGraphic(imgSandwich, false, false, 198, 107);
+			sandwich.loadGraphic(imgSandwich, false, false, 198, 107);
 			sandwich.x = FlxG.width / 2 - sandwich.width / 2;
 			sandwich.y = 370;
 			
-			remove(doorway);
-			doorway = new FlxSprite(8, 170);
+			doorway = new FlxSprite(8, 168);
 			doorway.makeGraphic(20, 160, 0xff97683c);
 			add(doorway);
 			
-			remove(doorText);
-			doorText = new FlxText(doorway.x + 15, doorway.y - 20, 80);
+			doorText = new FlxText(doorway.x + 10, doorway.y - 20, 80);
 			doorText.color = FlxG.BLACK;
 			doorText.text = "Living Room";
 			add(doorText);
 			
-			remove(player);
+			staircase = new FlxSprite(240, 168);
+			staircase.makeGraphic(60, 160, FlxG.BLACK);
+			add(staircase);
+			stairText = new FlxText(staircase.x + staircase.width / 2, staircase.y - 20, 80);
+			stairText.color = FlxG.BLACK;
+			stairText.text = "Upstairs";
+			add(stairText);
+			
 			player = new FlxSprite(10, 185);
 			player.loadGraphic(imgPlayer, false, false, 60, 144);
 			player.maxVelocity.x = 80;
@@ -310,7 +315,55 @@ package telltaleGGJ
 			add(player);
 		}
 		
+		public function loadRoomThree():void {
+			FlxG.bgColor = 0xffffbcbc;
+			
+			removeAllThings();
+			
+			curRoom = 3;
+			
+			fridge = new FlxSprite(520, 168);
+			//frodge.makeGraphic(60, 80, 0xffaaaaaa);
+			fridge.loadGraphic(imgFridge, false, false, 78, 160);
+			add(fridge);
+			
+			sandwich = new FlxSprite();
+			sandwich.loadGraphic(imgSandwich, false, false, 198, 107);
+			sandwich.x = FlxG.width / 2 - sandwich.width / 2;
+			sandwich.y = 370;
+			
+			doorway = new FlxSprite(8, 168);
+			doorway.makeGraphic(20, 160, 0xff97683c);
+			add(doorway);
+			
+			doorText = new FlxText(doorway.x + 10, doorway.y - 20, 80);
+			doorText.color = FlxG.BLACK;
+			doorText.text = "Living Room";
+			add(doorText);
+			
+			staircase = new FlxSprite(240, 168);
+			staircase.makeGraphic(60, 160, FlxG.BLACK);
+			add(staircase);
+			stairText = new FlxText(staircase.x + staircase.width / 2, staircase.y - 20, 80);
+			stairText.color = FlxG.BLACK;
+			stairText.text = "Upstairs";
+			add(stairText);
+			
+			player = new FlxSprite(10, 185);
+			player.loadGraphic(imgPlayer, false, false, 60, 144);
+			player.maxVelocity.x = 80;
+			player.maxVelocity.y = 200;
+			player.acceleration.y = 200;
+			player.drag.x = player.maxVelocity.x * 4;
+			add(player);
+		}
+		
+		public function loadRoomFour():void {
+		
+		}
+		
 		public function loadOpponent():void {
+			remove(opponent);
 			opponent = new FlxSprite(100, 184);
 			opponent.makeGraphic(60, 144, FlxG.BLUE);
 			add(opponent);
@@ -354,7 +407,10 @@ package telltaleGGJ
 		public function startInteraction(interaction:String):void {
 			choices = new Choices(interaction);
 			textMain.color = FlxG.RED;
+			//FlxG.shake();
 			if (choices.getInteractionChoice() == "sandwich") {
+				textMain.text = "There is a sandwich in the fridge, will you eat it?";
+				
 				textMain.text = "You decided to eat a delicious sandwich that was in the fridge";
 				add(sandwich);
 			}
