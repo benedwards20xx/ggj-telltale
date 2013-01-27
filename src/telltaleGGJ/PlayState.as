@@ -43,7 +43,7 @@ package telltaleGGJ
 		public var inBetweenTimer:FlxTimer;
 		public var gameOverTimer:FlxTimer;
 		
-		public var heartSound:FlxSound;
+		public var sound:FlxSound;
 		
 		public var canInteract:Boolean;
 		public var canInputResponse:Boolean;
@@ -75,7 +75,12 @@ package telltaleGGJ
 		[Embed(source = "GGJ_BedSprite.png")] public var imgBed:Class;
 		[Embed(source = "GGJ_CouchSprite.png")] public var imgCouch:Class;
 		
-		[Embed(source="RealisticHeartbeat.mp3")] private var heartbeat:Class;
+		[Embed(source = "RealisticHeartbeat.mp3")] private var heartbeat:Class;
+		[Embed(source = "wscream_2.mp3")] private var scream:Class;
+		[Embed(source = "wooden-stairs-out-2-short.mp3")] private var walkStairs:Class;
+		[Embed(source = "qubodup-DoorOpen04.mp3")] private var fridgeOpen:Class;
+		[Embed(source = "qubodup-DoorOpen01.mp3")] private var doorOpen:Class;
+		[Embed(source = "qubodup-DoorClose07.mp3")] private var deskOpen:Class;
 
 		override public function create():void
 		{		
@@ -198,6 +203,7 @@ package telltaleGGJ
 						//hasHeart = false;
 						//startConversation("heart");
 					} else if (FlxG.overlap(player, doorway)) {
+						sound = FlxG.play(doorOpen);
 						if (curRoom == 1) {
 							prevRoom = 1;
 							loadRoomTwo();
@@ -212,6 +218,7 @@ package telltaleGGJ
 							loadRoomThree();
 						}	
 					} else if (FlxG.overlap(player, staircase)) {
+						sound = FlxG.play(walkStairs);
 						if (curRoom == 2) {
 							prevRoom = 2;
 							loadRoomThree();
@@ -306,6 +313,7 @@ package telltaleGGJ
 				textPrompt.color = FlxG.WHITE;
 				textPrompt.text = "Game Over - Global Game Jam 2013 - Ben Edwards, Nick Lytle";
 				add(textPrompt);
+				FlxG.music.stop();
 			}
 			
 			super.update();
@@ -417,8 +425,8 @@ package telltaleGGJ
 			if (prevRoom == 3) {
 				player = new FlxSprite(staircase.x, 185);
 				if (gaveWifeHeart) {
-					deadWife = new FlxSprite(360, 278);
-					deadWife.loadGraphic(imgWifeDead, false, false, 144, 60);
+					deadWife = new FlxSprite(220, 278);
+					deadWife.loadGraphic(imgWifeDead, false, true, 144, 60);
 					add(deadWife);
 					textMain.text = "You hear some knocking at the front door. Uh oh it might be the police...";
 					startInteraction("police");
@@ -473,6 +481,7 @@ package telltaleGGJ
 			}
 			
 			if (prevRoom == 4 && gaveWifeHeart && !wifeDead) {
+				sound = FlxG.play(scream);
 				FlxG.shake(0.05, 2);
 				wifeDead = true;
 				textMain.color = FlxG.RED;
@@ -514,7 +523,7 @@ package telltaleGGJ
 			
 			if (!gaveWifeHeart) {
 				if (eatSandwich) {
-					wife = new FlxSprite(100, 184);
+					wife = new FlxSprite(220, 184);
 					wife.loadGraphic(imgWife, false, false, 60, 144);
 					add(wife);
 					if (hasHeart) {
@@ -568,6 +577,7 @@ package telltaleGGJ
 			canInteract = false;
 			textMain.color = FlxG.RED;
 			if (interaction == "sandwich") {
+				sound = FlxG.play(fridgeOpen);
 				textMain.text = "There is a sandwich in the fridge, will you eat it?";
 				text1.color = FlxG.WHITE;
 				text1.text = "1. Eat it!";
@@ -581,6 +591,7 @@ package telltaleGGJ
 				sandwich.y = 370;
 				add(sandwich);
 			} else if (interaction == "heart") {
+				sound = FlxG.play(deskOpen);
 				textMain.text = "There is a box of chocolates in the desk, pick them up?"
 				text1.color = FlxG.WHITE;
 				text1.text = "1. Get them chocolates!";
@@ -603,7 +614,7 @@ package telltaleGGJ
 			inBetweenTimer.stop();
 			if (conversation == "sandwich") {
 				remove(wife);
-				wife = new FlxSprite(100, 184);
+				wife = new FlxSprite(220, 184);
 				wife.loadGraphic(imgWife, false, false, 60, 144);
 				add(wife);
 				inBetweenTimer.stop();
@@ -645,7 +656,26 @@ package telltaleGGJ
 			conversationStarted = false;
 			if (choices.getInteractionChoice() == "sandwich") {
 				textMain.color = FlxG.BLUE;
-				textMain.text = "WAHHH";
+				switch (randomNumber(1, 6)) {
+					case 1:
+						textMain.text = "AAAAAAAAAA";
+						break;
+					case 2:
+						textMain.text = "BBBBBBBBBB";
+						break;
+					case 3:
+						textMain.text = "CCCCCCCCCC";
+						break;
+					case 4:
+						textMain.text = "DDDDDDDDDD";
+						break;
+					case 5:
+						textMain.text = "EEEEEEEEEE";
+						break;
+					case 6:
+						textMain.text = "FFFFFFFFFF";
+						break;
+				}
 				remove(fridgeText);
 				remove(wife);
 				choiceSelections = "";
@@ -660,9 +690,8 @@ package telltaleGGJ
 				if (choiceSelections.charAt(choiceSelections.length - 1) == "1") {
 					textMain.color = FlxG.BLUE;
 					textMain.text = "You bastard";
-					
 				}
-				gameOverTimer.start(timerVal * 2);
+				gameOverTimer.start(timerVal * 3);
 				removeAllThings();
 			}
 		}
@@ -671,6 +700,10 @@ package telltaleGGJ
 			inBetween = true;
 			canInputResponse = false;
 			inBetweenTimer.start(timerVal);
+		}
+		
+		public function randomNumber(min:Number, max:Number):Number {
+			return Math.floor(Math.random() * (1 + max - min) + min);
 		}
 	}
 }
